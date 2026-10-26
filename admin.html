@@ -1,4 +1,194 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GloryXNepal Admin</title><style>body{font-family:Arial;background:#080a0f;color:#fff;padding:20px}main{max-width:900px;margin:auto}.box{background:#121722;border:1px solid #293140;border-radius:15px;padding:20px;margin:15px 0}input,button{padding:12px;border-radius:8px;border:1px solid #384152;background:#090c12;color:#fff}button{background:#ffc400;color:#111;font-weight:bold}.row{border-top:1px solid #303746;padding:15px 0}.p{color:#ffd43e}</style></head><body><main><h1>⚡ GloryXNepal Admin</h1><div class="box"><input id="pw" type="password" placeholder="Admin password"><button onclick="load()">View Orders</button></div><div id="orders" class="box">Orders will appear here.</div></main><script>
-const API_URL="https://script.google.com/macros/s/AKfycbxuIG0HJKNWvYHbv1e_OpYYiLQ7BTXoeyU-kkO1DyVzaQWyUt_fmZe6vicXU-kvhGy7aw/exec";
-async function load(){{let p=document.getElementById('pw').value;if(API_URL.startsWith("PASTE_"))return alert("Connect Apps Script first.");try{{let r=await fetch(API_URL+"?action=list&password="+encodeURIComponent(p));let d=await r.json();document.getElementById('orders').innerHTML=d.orders?.length?d.orders.map(o=>`<div class="row"><b>#${{o["Order ID"]}}</b> — <span class="p">${{o.Status}}</span><br>UID: ${{o.UID}}<br>${{o.Service}} • ${{o.Package}}<br>Rs.${{o.Amount}} • Ref: ${{o["Transaction ID"]}}</div>`).join(""):"No orders yet."}}catch(e){{alert("Could not load orders.")}}}}
-</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GloryXNepal Admin</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #080a0f;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .box {
+      background: #121722;
+      border: 1px solid #293140;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #384152;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    input {
+      background: #090c12;
+      color: white;
+    }
+
+    button {
+      background: #ffc400;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .order {
+      border-top: 1px solid #303746;
+      padding: 18px 0;
+      line-height: 1.7;
+    }
+
+    .pending {
+      color: #ffd43e;
+      font-weight: bold;
+    }
+
+    h1 {
+      color: #ffc400;
+    }
+
+    .error {
+      color: #ff6b6b;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>⚡ GloryXNepal Admin</h1>
+
+  <div class="box">
+
+    <h2>Admin Login</h2>
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Enter admin password"
+    >
+
+    <button onclick="loadOrders()">
+      VIEW ORDERS
+    </button>
+
+  </div>
+
+  <div class="box">
+
+    <h2>Orders</h2>
+
+    <div id="orders">
+      Enter your password and tap VIEW ORDERS.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxuIG0HJKNWvYHbv1e_OpYYiLQ7BTXoeyU-kkO1DyVzaQWyUt_fmZe6vicXU-kvhGy7aw/exec";
+
+
+async function loadOrders() {
+
+  const password =
+    document.getElementById("password").value;
+
+  if (!password) {
+    alert("Please enter your admin password.");
+    return;
+  }
+
+  document.getElementById("orders").innerHTML =
+    "Loading orders...";
+
+  try {
+
+    const response = await fetch(
+      API_URL +
+      "?action=list&password=" +
+      encodeURIComponent(password)
+    );
+
+    const data = await response.json();
+
+    if (data.error) {
+      document.getElementById("orders").innerHTML =
+        '<p class="error">Wrong admin password.</p>';
+      return;
+    }
+
+    if (!data.orders || data.orders.length === 0) {
+
+      document.getElementById("orders").innerHTML =
+        "No orders yet.";
+
+      return;
+    }
+
+    document.getElementById("orders").innerHTML =
+      data.orders.map(order => `
+
+        <div class="order">
+
+          <b>Order ID:</b>
+          ${order["Order ID"]}<br>
+
+          <b>UID:</b>
+          ${order["UID"]}<br>
+
+          <b>Service:</b>
+          ${order["Service"]}<br>
+
+          <b>Package:</b>
+          ${order["Package"]}<br>
+
+          <b>Amount:</b>
+          Rs. ${order["Amount"]}<br>
+
+          <b>Transaction ID:</b>
+          ${order["Transaction ID"]}<br>
+
+          <b>Status:</b>
+          <span class="pending">
+            ${order["Status"]}
+          </span>
+
+        </div>
+
+      `).join("");
+
+  } catch (error) {
+
+    document.getElementById("orders").innerHTML =
+      '<p class="error">Connection failed. Please check the Apps Script deployment.</p>';
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
