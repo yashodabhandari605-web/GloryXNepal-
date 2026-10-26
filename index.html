@@ -234,4 +234,259 @@ if(API_URL.startsWith("PASTE_")){show();alert("The website is ready, but the onl
 let proof="";if(file)proof=await new Promise(r=>{let x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(file)});
 try{await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({id,uid,service,pkg,amount,txn,proof})});show()}catch(e){show();alert("Online submission failed. Please send the order through WhatsApp.")}
 }
+</script><!-- GLORYXNEPAL CUSTOMER ACCOUNT -->
+<div id="gxAccount" style="display:none;position:fixed;inset:0;background:#080a0f;color:white;z-index:99999;overflow:auto;padding:20px;font-family:Arial">
+
+  <div style="max-width:500px;margin:30px auto;background:#121722;padding:25px;border-radius:18px">
+
+    <h2 style="color:#ffc400">GloryXNepal Account</h2>
+
+    <div id="gxLogin">
+
+      <input id="gxCustomer"
+        placeholder="Mobile number or email"
+        style="width:100%;padding:13px;box-sizing:border-box;margin:8px 0">
+
+      <input id="gxPassword"
+        type="password"
+        placeholder="Password"
+        style="width:100%;padding:13px;box-sizing:border-box;margin:8px 0">
+
+      <button onclick="gxLoginUser()"
+        style="width:100%;padding:13px;background:#ffc400;border:0;border-radius:8px;font-weight:bold">
+        LOGIN
+      </button>
+
+      <button onclick="gxRegisterUser()"
+        style="width:100%;padding:13px;margin-top:10px;background:#222;color:white;border:1px solid #555;border-radius:8px">
+        CREATE ACCOUNT
+      </button>
+
+      <p style="text-align:center;margin:15px">OR</p>
+
+      <button onclick="gxGoogleLogin()"
+        style="width:100%;padding:13px;background:white;color:#111;border:0;border-radius:8px;font-weight:bold">
+        🔵 CONTINUE WITH GOOGLE
+      </button>
+
+    </div>
+
+    <div id="gxProfile" style="display:none">
+
+      <h3>My Account</h3>
+
+      <p id="gxCustomerName"></p>
+
+      <button onclick="gxShowOrders()"
+        style="width:100%;padding:13px;background:#ffc400;border:0;border-radius:8px;font-weight:bold">
+        📦 MY ORDERS
+      </button>
+
+      <button onclick="gxLogout()"
+        style="width:100%;padding:13px;margin-top:10px;background:#e74c3c;color:white;border:0;border-radius:8px">
+        LOGOUT
+      </button>
+
+      <div id="gxOrders" style="margin-top:20px"></div>
+
+    </div>
+
+    <button onclick="gxCloseAccount()"
+      style="width:100%;padding:12px;margin-top:20px;background:#222;color:white;border:1px solid #555;border-radius:8px">
+      CLOSE
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const GX_API =
+"https://script.google.com/macros/s/AKfycbxuIG0HJKNWvYHbv1e_OpYYiLQ7BTXoeyU-kkO1DyVzaQWyUt_fmZe6vicXU-kvhGy7aw/exec";
+
+let gxCurrentCustomer =
+localStorage.getItem("gx_customer") || "";
+
+function gxOpenAccount(){
+
+  document.getElementById("gxAccount").style.display="block";
+
+  if(gxCurrentCustomer){
+
+    document.getElementById("gxLogin").style.display="none";
+    document.getElementById("gxProfile").style.display="block";
+
+    document.getElementById("gxCustomerName").innerText =
+      "Logged in as: " + gxCurrentCustomer;
+
+  }
+
+}
+
+function gxCloseAccount(){
+
+  document.getElementById("gxAccount").style.display="none";
+
+}
+
+async function gxRegisterUser(){
+
+  const customer =
+    document.getElementById("gxCustomer").value.trim();
+
+  const password =
+    document.getElementById("gxPassword").value;
+
+  if(!customer || !password){
+
+    alert("Enter mobile/email and password.");
+
+    return;
+
+  }
+
+  const url =
+    GX_API +
+    "?action=register" +
+    "&customer=" + encodeURIComponent(customer) +
+    "&password=" + encodeURIComponent(password);
+
+  const r = await fetch(url);
+  const d = await r.json();
+
+  if(d.ok){
+
+    alert("Account created. You can now login.");
+
+  }else{
+
+    alert(d.error || "Registration failed.");
+
+  }
+
+}
+
+async function gxLoginUser(){
+
+  const customer =
+    document.getElementById("gxCustomer").value.trim();
+
+  const password =
+    document.getElementById("gxPassword").value;
+
+  if(!customer || !password){
+
+    alert("Enter your login details.");
+
+    return;
+
+  }
+
+  const url =
+    GX_API +
+    "?action=login" +
+    "&customer=" + encodeURIComponent(customer) +
+    "&password=" + encodeURIComponent(password);
+
+  const r = await fetch(url);
+  const d = await r.json();
+
+  if(d.ok){
+
+    gxCurrentCustomer = customer;
+
+    localStorage.setItem(
+      "gx_customer",
+      customer
+    );
+
+    document.getElementById("gxLogin").style.display="none";
+    document.getElementById("gxProfile").style.display="block";
+
+    document.getElementById("gxCustomerName").innerText =
+      "Logged in as: " + customer;
+
+    gxShowOrders();
+
+  }else{
+
+    alert("Invalid login.");
+
+  }
+
+}
+
+async function gxShowOrders(){
+
+  if(!gxCurrentCustomer){
+
+    alert("Please login first.");
+
+    return;
+
+  }
+
+  document.getElementById("gxOrders").innerHTML =
+    "Loading orders...";
+
+  const url =
+    GX_API +
+    "?action=myorders" +
+    "&customer=" +
+    encodeURIComponent(gxCurrentCustomer);
+
+  const r = await fetch(url);
+  const d = await r.json();
+
+  if(!d.orders || d.orders.length===0){
+
+    document.getElementById("gxOrders").innerHTML =
+      "<p>No orders found.</p>";
+
+    return;
+
+  }
+
+  document.getElementById("gxOrders").innerHTML =
+    d.orders.map(o => `
+
+      <div style="padding:15px 0;border-top:1px solid #333">
+
+        <b>Order:</b> ${o["Order ID"]}<br>
+        <b>Service:</b> ${o["Service"]}<br>
+        <b>Package:</b> ${o["Package"]}<br>
+        <b>Amount:</b> Rs. ${o["Amount"]}<br>
+
+        <b>Status:</b>
+        <span style="color:#ffc400;font-weight:bold">
+        ${o["Status"]}
+        </span>
+
+      </div>
+
+    `).join("");
+
+}
+
+function gxLogout(){
+
+  localStorage.removeItem("gx_customer");
+
+  gxCurrentCustomer="";
+
+  document.getElementById("gxProfile").style.display="none";
+  document.getElementById("gxLogin").style.display="block";
+
+}
+
+function gxGoogleLogin(){
+
+  alert(
+    "Google login needs Google OAuth configuration. " +
+    "The mobile/email login is ready first."
+  );
+
+}
+
 </script></body></html>
