@@ -1,191 +1,330 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GloryXNepal Admin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #080a0f;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
+<title>GloryXNepal Admin</title>
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
+<style>
 
-    .box {
-      background: #121722;
-      border: 1px solid #293140;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
+body{
+margin:0;
+padding:20px;
+background:#080a0f;
+color:white;
+font-family:Arial,sans-serif;
+}
 
-    input, button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: 1px solid #384152;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
+.container{
+max-width:1000px;
+margin:auto;
+}
 
-    input {
-      background: #090c12;
-      color: white;
-    }
+h1{
+color:#ffc400;
+}
 
-    button {
-      background: #ffc400;
-      color: #111;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.box{
+background:#121722;
+border:1px solid #293140;
+border-radius:15px;
+padding:20px;
+margin-bottom:20px;
+}
 
-    .order {
-      border-top: 1px solid #303746;
-      padding: 18px 0;
-      line-height: 1.7;
-    }
+input{
+width:100%;
+padding:13px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #384152;
+background:#090c12;
+color:white;
+box-sizing:border-box;
+}
 
-    .pending {
-      color: #ffd43e;
-      font-weight: bold;
-    }
+button{
+padding:10px 14px;
+margin:5px 3px 0 0;
+border:0;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
 
-    h1 {
-      color: #ffc400;
-    }
+.view{
+background:#ffc400;
+color:#111;
+}
 
-    .error {
-      color: #ff6b6b;
-    }
-  </style>
+.approve{
+background:#20c978;
+color:white;
+}
+
+.reject{
+background:#e74c3c;
+color:white;
+}
+
+.complete{
+background:#4285f4;
+color:white;
+}
+
+.proof{
+background:#9b59b6;
+color:white;
+}
+
+.order{
+border-top:1px solid #303746;
+padding:20px 0;
+line-height:1.7;
+}
+
+.pending{
+color:#ffd43e;
+font-weight:bold;
+}
+
+.paid{
+color:#20c978;
+font-weight:bold;
+}
+
+.completed{
+color:#4285f4;
+font-weight:bold;
+}
+
+.rejected{
+color:#ff6b6b;
+font-weight:bold;
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>⚡ GloryXNepal Admin</h1>
+<h1>⚡ GloryXNepal Admin</h1>
 
-  <div class="box">
+<div class="box">
 
-    <h2>Admin Login</h2>
+<h2>Admin Login</h2>
 
-    <input
-      id="password"
-      type="password"
-      placeholder="Enter admin password"
-    >
+<input
+id="password"
+type="password"
+placeholder="Enter admin password"
+>
 
-    <button onclick="loadOrders()">
-      VIEW ORDERS
-    </button>
-
-  </div>
-
-  <div class="box">
-
-    <h2>Orders</h2>
-
-    <div id="orders">
-      Enter your password and tap VIEW ORDERS.
-    </div>
-
-  </div>
+<button class="view" onclick="loadOrders()">
+VIEW ORDERS
+</button>
 
 </div>
 
+<div class="box">
+
+<h2>Customer Orders</h2>
+
+<div id="orders">
+Enter password and tap VIEW ORDERS.
+</div>
+
+</div>
+
+</div>
+
+
 <script>
+
 const API_URL =
 "https://script.google.com/macros/s/AKfycbxuIG0HJKNWvYHbv1e_OpYYiLQ7BTXoeyU-kkO1DyVzaQWyUt_fmZe6vicXU-kvhGy7aw/exec";
-async function loadOrders() {
 
-  const password =
-    document.getElementById("password").value;
 
-  if (!password) {
-    alert("Please enter your admin password.");
-    return;
-  }
+async function loadOrders(){
 
-  document.getElementById("orders").innerHTML =
-    "Loading orders...";
+const password =
+document.getElementById("password").value;
 
-  try {
+if(!password){
 
-    const response = await fetch(
-      API_URL +
-      "?action=list&password=" +
-      encodeURIComponent(password)
-    );
+alert("Please enter your admin password.");
 
-    const data = await response.json();
+return;
 
-    if (data.error) {
-      document.getElementById("orders").innerHTML =
-        '<p class="error">Wrong admin password.</p>';
-      return;
-    }
+}
 
-    if (!data.orders || data.orders.length === 0) {
+document.getElementById("orders").innerHTML =
+"Loading orders...";
 
-      document.getElementById("orders").innerHTML =
-        "No orders yet.";
+try{
 
-      return;
-    }
+const response = await fetch(
+API_URL +
+"?action=list&password=" +
+encodeURIComponent(password)
+);
 
-    document.getElementById("orders").innerHTML =
-      data.orders.map(order => `
+const data = await response.json();
 
-        <div class="order">
+if(data.error){
 
-          <b>Order ID:</b>
-          ${order["Order ID"]}<br>
+document.getElementById("orders").innerHTML =
+"Wrong admin password.";
 
-          <b>UID:</b>
-          ${order["UID"]}<br>
+return;
 
-          <b>Service:</b>
-          ${order["Service"]}<br>
+}
 
-          <b>Package:</b>
-          ${order["Package"]}<br>
+if(!data.orders || data.orders.length === 0){
 
-          <b>Amount:</b>
-          Rs. ${order["Amount"]}<br>
+document.getElementById("orders").innerHTML =
+"No orders yet.";
 
-          <b>Transaction ID:</b>
-          ${order["Transaction ID"]}<br>
+return;
 
-          <b>Status:</b>
-          <span class="pending">
-            ${order["Status"]}
-          </span>
+}
 
-        </div>
+document.getElementById("orders").innerHTML =
+data.orders.map(order => createOrder(order)).join("");
 
-      `).join("");
+}catch(error){
 
-  } catch (error) {
+document.getElementById("orders").innerHTML =
+"Connection failed.";
 
-    document.getElementById("orders").innerHTML =
-      '<p class="error">Connection failed. Please check the Apps Script deployment.</p>';
+}
 
-  }
+}
+
+
+function createOrder(order){
+
+let status =
+String(order["Status"] || "PENDING");
+
+let statusClass =
+status.toLowerCase();
+
+let proof = "";
+
+if(order["Proof URL"]){
+
+proof =
+`<br><button class="proof"
+onclick="window.open('${order["Proof URL"]}','_blank')">
+📷 VIEW PAYMENT PROOF
+</button>`;
+
+}
+
+return `
+
+<div class="order">
+
+<b>Order ID:</b>
+${order["Order ID"]}<br>
+
+<b>UID:</b>
+${order["UID"]}<br>
+
+<b>Service:</b>
+${order["Service"]}<br>
+
+<b>Package:</b>
+${order["Package"]}<br>
+
+<b>Amount:</b>
+Rs. ${order["Amount"]}<br>
+
+<b>Transaction ID:</b>
+${order["Transaction ID"]}<br>
+
+<b>Status:</b>
+<span class="${statusClass}">
+${status}
+</span>
+
+${proof}
+
+<br>
+
+<button class="approve"
+onclick="changeStatus('${order["Order ID"]}','PAID')">
+✓ APPROVE / PAID
+</button>
+
+<button class="reject"
+onclick="changeStatus('${order["Order ID"]}','REJECTED')">
+✕ REJECT
+</button>
+
+<button class="complete"
+onclick="changeStatus('${order["Order ID"]}','COMPLETED')">
+✓ COMPLETE
+</button>
+
+</div>
+
+`;
+
+}
+
+
+async function changeStatus(orderId,status){
+
+const password =
+document.getElementById("password").value;
+
+if(!confirm("Change this order to " + status + "?")){
+
+return;
+
+}
+
+try{
+
+const response = await fetch(
+API_URL +
+"?action=update" +
+"&password=" +
+encodeURIComponent(password) +
+"&id=" +
+encodeURIComponent(orderId) +
+"&status=" +
+encodeURIComponent(status)
+);
+
+const data = await response.json();
+
+if(data.ok){
+
+alert("Order updated to " + status);
+
+loadOrders();
+
+}else{
+
+alert(data.error || "Update failed.");
+
+}
+
+}catch(error){
+
+alert("Connection failed.");
+
+}
 
 }
 
 </script>
 
 </body>
-</html>
+  </html>
