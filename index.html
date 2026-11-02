@@ -232,7 +232,16 @@ const id="GN"+Date.now().toString().slice(-8);
 const show=()=>{document.getElementById('box').style.display='block';document.getElementById('oid').textContent="Order #"+id;document.getElementById('detail').textContent="UID: "+uid+" • "+service+" • "+pkg+" • Rs."+amount;document.getElementById('wa').href="https://wa.me/9779767417628?text="+encodeURIComponent("Hello GloryXNepal!\nOrder ID: "+id+"\nUID: "+uid+"\nService: "+service+"\nPackage: "+pkg+"\nAmount: Rs."+amount+"\neSewa Ref: "+txn+"\nStatus: PENDING VERIFICATION")};
 if(API_URL.startsWith("PASTE_")){show();alert("The website is ready, but the online database is not connected yet.");return}
 let proof="";if(file)proof=await new Promise(r=>{let x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(file)});
-try{await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({id,uid,service,pkg,amount,txn,proof})});show()}catch(e){show();alert("Online submission failed. Please send the order through WhatsApp.")}
+try{await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body: JSON.stringify({
+  id,
+  uid,
+  service,
+  pkg,
+  amount,
+  txn,
+  proof,
+  customer: gxCurrentCustomer
+})
 }
 </script><!-- GLORYXNEPAL CUSTOMER ACCOUNT -->
 <div id="gxAccount" style="display:none;position:fixed;inset:0;background:#080a0f;color:white;z-index:99999;overflow:auto;padding:20px;font-family:Arial">
